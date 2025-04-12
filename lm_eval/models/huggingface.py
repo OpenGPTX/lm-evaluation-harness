@@ -95,6 +95,10 @@ class HFLM(TemplateLM):
         **kwargs,
     ) -> None:
         super().__init__()
+        nccl_timeout = timedelta(seconds=float(kwargs.pop("nccl_timeout", 86400)))
+        if nccl_timeout == timedelta(seconds=1800):
+            eval_logger.warn("nccl_timeout cannot be set to 1800 due to a bug in accelerate. Setting to 1800.001 instead.")
+            nccl_timeout += timedelta(milliseconds=1)
         # optionally: take in an already-initialized transformers.PreTrainedModel
         if not isinstance(pretrained, str):
             eval_logger.warning(
@@ -114,7 +118,7 @@ class HFLM(TemplateLM):
             assert isinstance(batch_size, (int, str))
 
             gpus = torch.cuda.device_count()
-            accelerator_kwargs = InitProcessGroupKwargs(timeout=timedelta(weeks=52))
+            accelerator_kwargs = InitProcessGroupKwargs(timeout=nccl_timeout)
             accelerator = Accelerator(kwargs_handlers=[accelerator_kwargs])
             if accelerator.num_processes > 1:
                 self.accelerator = accelerator
