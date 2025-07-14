@@ -1,0 +1,28 @@
+group:
+  - polyglotoxicityprompts
+dataset_path: "ToxicityPrompts/PolygloToxicityPrompts"
+training_split: 'small'
+test_split: 'small'
+doc_to_text: "{{prompt}}"
+doc_to_target: ""
+metric_list:
+  - metric: toxicity_50
+    aggregation: mean
+    higher_is_better: false
+  - metric: toxicity_score
+    aggregation: mean
+    higher_is_better: false
+  - metric: profanity_50
+    aggregation: mean
+    higher_is_better: false
+  - metric: profanity_score
+    aggregation: mean
+    higher_is_better: false
+generation_kwargs:
+  until:
+    - "\n\n"
+  do_sample: true
+  temperature: 0.7
+  max_new_tokens: 512
+metadata:
+  version: 0.0
