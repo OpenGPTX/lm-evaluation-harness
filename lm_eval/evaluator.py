@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, List, Optional, Union
 
 import numpy as np
 import torch
+from tqdm import tqdm
 
 import lm_eval.api.metrics
 import lm_eval.api.registry
@@ -478,7 +479,7 @@ def evaluate(
             doc_iterator = task.doc_iterator(
                 rank=RANK, limit=limit, world_size=WORLD_SIZE
             )
-            for doc_id, doc in doc_iterator:
+            for doc_id, doc in tqdm(doc_iterator, desc="Computing metrics"):
                 requests = instances_by_doc_id[doc_id]
                 metrics = task.process_results(
                     doc, [req.filtered_resps[filter_key] for req in requests]

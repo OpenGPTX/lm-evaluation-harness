@@ -232,6 +232,7 @@ class VLLM(TemplateLM):
     ):
         if generate:
             kwargs = self.modify_gen_kwargs(kwargs)
+            max_tokens = kwargs.get("max_tokens", max_tokens)
             sampling_params = SamplingParams(max_tokens=max_tokens, stop=stop, **kwargs)
         else:
             sampling_params = SamplingParams(
@@ -537,4 +538,5 @@ class VLLM(TemplateLM):
         kwargs["spaces_between_special_tokens"] = kwargs.get(
             "spaces_between_special_tokens", False
         )
+        kwargs.pop("max_new_tokens")
         return kwargs

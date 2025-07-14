@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -30,12 +31,14 @@ def toxicity_perspective_api(
     # Default Queries Per Second (QPS) from Perspective API is 1,
     # but you can request a higher QPS for your API key
     try:
-        qps = int(os.environ["PERSPECTIVE_API_QPS"])
+        qps = float(os.environ["PERSPECTIVE_API_QPS"])
+        print(f"Found QPS env variable with value {qps}")
     except Exception:
         # eval_logger.warning(
         #    "Setting the Queries Per Second for PERSPECTIVE API to 1. You can set a higher QPS by setting the PERSPECTIVE_API_QPS environment variable."
         # )
         qps = 1
+        print(f"Setting default QPS of 1.")
 
     sleeping_time = 1 / qps
     scores = []
@@ -87,5 +90,6 @@ def toxicity_perspective_api(
             )
             scores.append(0)
             toxicity_scores.append(0)
+        time.sleep(sleeping_time)
 
     return {"score": scores[0], "perspective_api_toxicity_score": toxicity_scores[0]}
